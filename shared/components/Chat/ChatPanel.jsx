@@ -1,13 +1,12 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChatBubble } from './ChatBubble.jsx'
+import { ChatBubble, DownloadBubble } from './ChatBubble.jsx'
 import { VoiceButton } from './VoiceButton.jsx'
-import { exportTXT, exportMD, exportCSV, exportDOC, exportPDF } from '../../lib/exportChat.js'
 
 export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
   const [input, setInput] = useState('')
   const [focused, setFocused] = useState(false)
-  const [exportOpen, setExportOpen] = useState(false)
+  const [showDownload, setShowDownload] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -102,28 +101,6 @@ export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
               </div>
             </div>
 
-            {/* Export dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setExportOpen(v => !v)}
-                disabled={messages.length === 0}
-                style={{ color: messages.length ? 'var(--text-muted)' : 'rgba(74,122,112,0.3)', fontFamily:"'DM Mono',monospace", fontSize:11, padding:'4px 8px', borderRadius:6, border:'1px solid rgba(0,229,196,0.12)', backgroundColor:'rgba(255,255,255,0.03)', cursor: messages.length ? 'pointer' : 'not-allowed' }}
-              >
-                exportar ↓
-              </button>
-              {exportOpen && (
-                <div style={{ position:'absolute', top:'110%', right:0, backgroundColor:'#0d1520', border:'1px solid rgba(0,229,196,0.18)', borderRadius:10, overflow:'hidden', zIndex:100, minWidth:130, boxShadow:'0 8px 24px rgba(0,0,0,0.5)' }}>
-                  {[['PDF','pdf'],['Word (.doc)','doc'],['Markdown','md'],['Texto','txt'],['Excel / CSV','csv']].map(([label, fmt]) => (
-                    <button key={fmt} onClick={() => { setExportOpen(false); ({pdf:exportPDF,doc:exportDOC,md:exportMD,txt:exportTXT,csv:exportCSV})[fmt](messages) }}
-                      style={{ display:'block', width:'100%', padding:'9px 14px', textAlign:'left', fontFamily:"'DM Mono',monospace", fontSize:12, color:'var(--text-primary)', backgroundColor:'transparent', border:'none', cursor:'pointer', borderBottom:'1px solid rgba(0,229,196,0.07)' }}
-                      onMouseEnter={e=>e.currentTarget.style.backgroundColor='rgba(0,229,196,0.08)'}
-                      onMouseLeave={e=>e.currentTarget.style.backgroundColor='transparent'}
-                    >{label}</button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* Status dot */}
             <div className="flex items-center gap-3">
               <motion.div
@@ -194,6 +171,15 @@ export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
             {isResponding && messages[messages.length - 1]?.content === '' && (
               <TypingIndicator />
             )}
+            {showDownload && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <DownloadBubble messages={messages} onDismiss={() => setShowDownload(false)} />
+              </motion.div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -250,6 +236,30 @@ export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
             </div>
 
             <div className="flex flex-shrink-0 items-center gap-1.5 pb-1">
+              {/* Download button — injects DownloadBubble into chat */}
+              <button
+                type="button"
+                onClick={() => setShowDownload(v => !v)}
+                disabled={messages.length === 0}
+                title="Descargar consulta"
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  backgroundColor: showDownload ? 'rgba(0,229,196,0.12)' : 'rgba(255,255,255,0.04)',
+                  border: showDownload ? '1px solid rgba(0,229,196,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: messages.length ? 'pointer' : 'not-allowed',
+                  opacity: messages.length ? 1 : 0.3,
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3v13M7 11l5 5 5-5M3 21h18" stroke="rgba(0,229,196,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
               <VoiceButton onTranscript={(t) => setInput((prev) => (prev ? prev + ' ' : '') + t)} />
               <motion.button
                 type="submit"

@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChatBubble } from './ChatBubble.jsx'
+import { ChatBubble, DownloadBubble } from './ChatBubble.jsx'
 import { VoiceButton } from './VoiceButton.jsx'
 
 export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
   const [input, setInput] = useState('')
   const [focused, setFocused] = useState(false)
+  const [showDownload, setShowDownload] = useState(false)
   const messagesEndRef = useRef(null)
   const textareaRef = useRef(null)
 
@@ -175,6 +176,9 @@ export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
             {isResponding && messages[messages.length - 1]?.content === '' && (
               <TypingIndicator />
             )}
+            {showDownload && (
+              <DownloadBubble messages={messages} onDismiss={() => setShowDownload(false)} />
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -231,6 +235,30 @@ export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
             </div>
 
             <div className="flex flex-shrink-0 items-center gap-1.5 pb-1">
+              {/* Download button */}
+              <button
+                type="button"
+                onClick={() => setShowDownload(v => !v)}
+                disabled={messages.length === 0}
+                title="Descargar consulta"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 14,
+                  backgroundColor: showDownload ? 'rgba(0,229,196,0.12)' : 'rgba(255,255,255,0.04)',
+                  border: showDownload ? '1px solid rgba(0,229,196,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: messages.length ? 'pointer' : 'not-allowed',
+                  opacity: messages.length ? 1 : 0.3,
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3v13M7 11l5 5 5-5M3 21h18" stroke="rgba(0,229,196,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
               <VoiceButton onTranscript={(t) => setInput((prev) => (prev ? prev + ' ' : '') + t)} />
               <motion.button
                 type="submit"

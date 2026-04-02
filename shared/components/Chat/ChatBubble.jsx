@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { GlowEffect } from './GlowEffect.jsx'
+import { exportTXT, exportMD, exportCSV, exportDOC, exportPDF } from '../../lib/exportChat.js'
 
 const mdComponents = {
   p: ({ children }) => (
@@ -57,7 +58,6 @@ const mdComponents = {
       letterSpacing: '0.06em',
     }}>{children}</h3>
   ),
-  // In react-markdown v10, `code` = inline only; block code comes via `pre > code`
   code: ({ children }) => (
     <code style={{
       backgroundColor: 'rgba(0,229,196,0.1)',
@@ -80,7 +80,6 @@ const mdComponents = {
       fontSize: '0.86em',
       lineHeight: 1.55,
     }}>
-      {/* Reset inline code styling inside pre blocks */}
       {typeof children === 'object'
         ? <code style={{ fontFamily: "'DM Mono', monospace", background: 'none', border: 'none', padding: 0, color: 'var(--text-primary)', fontSize: 'inherit' }}>
             {children?.props?.children}
@@ -140,6 +139,64 @@ const mdComponents = {
   ),
 }
 
+// Download bubble — rendered inline in chat when user triggers export
+export function DownloadBubble({ messages, onDismiss }) {
+  const formats = [
+    { label: 'PDF', fn: () => exportPDF(messages) },
+    { label: 'Word (.doc)', fn: () => exportDOC(messages) },
+    { label: 'Markdown', fn: () => exportMD(messages) },
+    { label: 'Texto .txt', fn: () => exportTXT(messages) },
+    { label: 'Excel / CSV', fn: () => exportCSV(messages) },
+  ]
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 12 }}>
+      <div style={{
+        maxWidth: '88%',
+        padding: '14px 16px',
+        borderRadius: 18,
+        borderBottomLeftRadius: 4,
+        backgroundColor: 'rgba(13,21,32,0.85)',
+        border: '1px solid rgba(0,229,196,0.18)',
+        backdropFilter: 'blur(8px)',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
+      }}>
+        <p style={{
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 12,
+          color: 'var(--text-muted)',
+          marginBottom: 10,
+        }}>
+          Elige formato para descargar tu consulta:
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {formats.map(({ label, fn }) => (
+            <button
+              key={label}
+              onClick={() => { fn(); onDismiss?.() }}
+              style={{
+                padding: '6px 14px',
+                borderRadius: 20,
+                border: '1px solid rgba(0,229,196,0.25)',
+                backgroundColor: 'rgba(0,229,196,0.06)',
+                color: 'var(--accent-teal)',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 11,
+                cursor: 'pointer',
+                transition: 'background-color 0.15s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,229,196,0.14)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,229,196,0.06)'}
+            >
+              ↓ {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function ChatBubble({ message }) {
   const isUser = message.role === 'user'
   const [showGlow, setShowGlow] = useState(message.isNew === true)
@@ -153,7 +210,8 @@ export function ChatBubble({ message }) {
 
   if (isUser) {
     return (
-      <div className="flex justify-end" style={{ marginBottom: 12 }}>
+      // Inline style for alignment — Tailwind justify-end can be unreliable in v4
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
         <div
           style={{
             maxWidth: '78%',
@@ -177,7 +235,7 @@ export function ChatBubble({ message }) {
   }
 
   return (
-    <div className="flex justify-start" style={{ marginBottom: 12 }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 12 }}>
       <div
         className="relative"
         style={{
