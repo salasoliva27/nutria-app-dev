@@ -25,7 +25,7 @@ export function DashboardPage({ userId }) {
       style={{ backgroundColor: 'var(--bg-deep)', scrollSnapType: 'y proximity' }}
     >
       <div style={{ scrollSnapAlign: 'start' }}>
-        <ProfileSection />
+        <ProfileSection userId={userId} />
       </div>
       <WaveDivider />
       <div style={{ scrollSnapAlign: 'start' }}>

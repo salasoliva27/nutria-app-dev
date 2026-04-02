@@ -1,14 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NutriaLogo } from '../components/ui/NutriaLogo.jsx'
 import { ChatPanel } from '@shared/components/Chat/ChatPanel.jsx'
 import { ChatFull } from '@shared/components/Chat/ChatFull.jsx'
 import { useChat } from '@shared/hooks/useChat.js'
+import { useProfile } from '@shared/hooks/useProfile.js'
+import { extractProfileFromMessages } from '@shared/lib/profileExtractor.js'
 
 export function MainPage({ userId }) {
   const [chatOpen, setChatOpen] = useState(false)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-  const { messages, isResponding, sendMessage } = useChat({ persist: true, userId })
+
+  const { profile, saveProfile } = useProfile(userId)
+  const { messages, isResponding, sendMessage } = useChat({
+    persist: !!userId,
+    userId,
+    patientProfile: profile,
+  })
+
+  // Track the last message count at which we ran extraction
+  const lastExtractedAt = useRef(0)
+
+  useEffect(() => {
+    if (!userId || !saveProfile) return
+    // Don't extract if intake is already complete
+    if (profile?.intake_complete) return
+    // Only extract at milestones: 8, 16, 24... messages
+    if (messages.length < 8) return
+    if (messages.length % 8 !== 0) return
+    if (messages.length === lastExtractedAt.current) return
+
+    lastExtractedAt.current = messages.length
+
+    extractProfileFromMessages(messages).then((extracted) => {
+      if (extracted) saveProfile(extracted)
+    })
+  }, [messages.length])
 
   return (
     <div
