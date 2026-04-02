@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+:host {
+  --bg-deep: #080c10;
+  --bg-surface: #0d1520;
+  --accent-teal: #00e5c4;
+  --accent-warm: #f0c060;
+  --text-primary: #e8f4f0;
+  --text-muted: #4a7a70;
+  --glow-color: #00e5c4;
+  all: initial;
+  font-family: 'DM Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
