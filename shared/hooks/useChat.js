@@ -54,6 +54,11 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
     }
   }
 
+  // Strip UI-only fields before sending to the API
+  function toApiMessages(msgs) {
+    return msgs.map(({ role, content }) => ({ role, content }))
+  }
+
   const sendMessage = useCallback(async (text) => {
     const userMessage = { role: 'user', content: text }
     const nextMessages = [...messages, userMessage]
@@ -65,7 +70,7 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
 
     try {
       await streamChat(
-        nextMessages,
+        toApiMessages(nextMessages),
         (chunk) => {
           setMessages((prev) => {
             const updated = [...prev]
