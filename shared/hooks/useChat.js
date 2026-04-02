@@ -5,6 +5,7 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
   const [messages, setMessages] = useState([])
   const [isResponding, setIsResponding] = useState(false)
   const [conversationId, setConversationId] = useState(null)
+  const [returning, setReturning] = useState(false) // true when a previous conversation was loaded
 
   // Load persisted conversation on mount (app mode only)
   useEffect(() => {
@@ -22,9 +23,10 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
         .eq('user_id', userId)
         .single()
 
-      if (data) {
-        setMessages(data.messages || [])
+      if (data && data.messages?.length > 0) {
+        setMessages(data.messages)
         setConversationId(data.id)
+        setReturning(true)
       }
     } catch {
       // no existing conversation — start fresh
@@ -102,5 +104,5 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
     }
   }, [messages, patientProfile, persist, userId, conversationId])
 
-  return { messages, isResponding, sendMessage }
+  return { messages, isResponding, sendMessage, returning }
 }

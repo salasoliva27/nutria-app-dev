@@ -36,7 +36,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center" style={{ backgroundColor: 'var(--bg-deep)' }}>
+      <div className="flex h-full items-center justify-center" style={{ backgroundColor: 'rgba(8,12,16,0.87)' }}>
         <div className="h-8 w-8 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--accent-teal)', borderTopColor: 'transparent' }} />
       </div>
     )

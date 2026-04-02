@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChatBubble, DownloadBubble } from './ChatBubble.jsx'
 import { VoiceButton } from './VoiceButton.jsx'
 
-export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
+export function ChatFull({ isOpen, onClose, messages, isResponding, onSend, returning = false }) {
   const [input, setInput] = useState('')
   const [focused, setFocused] = useState(false)
   const [showDownload, setShowDownload] = useState(false)
@@ -166,7 +166,9 @@ export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
                   textAlign: 'center',
                   lineHeight: 1.7,
                 }}>
-                  Hola, soy nutrIA.<br />¿En qué puedo ayudarte hoy?
+                  {returning
+                    ? <>Bienvenido de vuelta.<br />¿Continuamos donde lo dejamos?</>
+                    : <>Hola, soy nutrIA.<br />¿En qué puedo ayudarte hoy?</>}
                 </p>
               </div>
             )}

@@ -63,7 +63,7 @@ export function AuthScreen({ onAuth }) {
   return (
     <div
       className="relative flex h-full items-center justify-center overflow-hidden"
-      style={{ backgroundColor: 'var(--bg-deep)' }}
+      style={{ backgroundColor: 'rgba(8,12,16,0.87)' }}
     >
       <NoiseBackground />
 

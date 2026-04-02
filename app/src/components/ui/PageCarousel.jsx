@@ -20,7 +20,7 @@ export function PageCarousel({ userId }) {
   }
 
   return (
-    <div ref={containerRef} className="relative h-full overflow-hidden" style={{ backgroundColor: 'var(--bg-deep)' }}>
+    <div ref={containerRef} className="relative h-full overflow-hidden" style={{ backgroundColor: 'rgba(8,12,16,0.87)' }}>
       <motion.div
         className="flex h-full"
         style={{ width: '200%' }}

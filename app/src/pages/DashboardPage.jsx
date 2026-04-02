@@ -22,7 +22,7 @@ export function DashboardPage({ userId }) {
   return (
     <div
       className="h-full overflow-y-auto"
-      style={{ backgroundColor: 'var(--bg-deep)', scrollSnapType: 'y proximity' }}
+      style={{ backgroundColor: 'transparent', scrollSnapType: 'y proximity' }}
     >
       <div style={{ scrollSnapAlign: 'start' }}>
         <ProfileSection userId={userId} />

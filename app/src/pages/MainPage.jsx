@@ -12,7 +12,7 @@ export function MainPage({ userId }) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
 
   const { profile, saveProfile } = useProfile(userId)
-  const { messages, isResponding, sendMessage } = useChat({
+  const { messages, isResponding, sendMessage, returning } = useChat({
     persist: !!userId,
     userId,
     patientProfile: profile,
@@ -40,7 +40,7 @@ export function MainPage({ userId }) {
   return (
     <div
       className="relative flex h-full flex-col items-center justify-center overflow-hidden"
-      style={{ backgroundColor: 'var(--bg-deep)' }}
+      style={{ backgroundColor: 'transparent' }}
     >
       {/* Ambient glow */}
       <motion.div
@@ -62,7 +62,9 @@ export function MainPage({ userId }) {
             nutrIA
           </h1>
           <p style={{ color: 'var(--text-muted)', fontFamily: "'DM Mono', monospace", fontSize: 13 }}>
-            nutrición clínica · inteligencia artificial
+            {returning
+              ? `bienvenido de vuelta${profile?.name ? ', ' + profile.name : ''} 🦦`
+              : 'nutrición clínica · inteligencia artificial'}
           </p>
         </div>
 
@@ -99,9 +101,9 @@ export function MainPage({ userId }) {
       </div>
 
       {isMobile ? (
-        <ChatFull isOpen={chatOpen} onClose={() => setChatOpen(false)} messages={messages} isResponding={isResponding} onSend={sendMessage} />
+        <ChatFull isOpen={chatOpen} onClose={() => setChatOpen(false)} messages={messages} isResponding={isResponding} onSend={sendMessage} returning={returning} />
       ) : (
-        <ChatPanel isOpen={chatOpen} onClose={() => setChatOpen(false)} messages={messages} isResponding={isResponding} onSend={sendMessage} />
+        <ChatPanel isOpen={chatOpen} onClose={() => setChatOpen(false)} messages={messages} isResponding={isResponding} onSend={sendMessage} returning={returning} />
       )}
     </div>
   )
