@@ -2,10 +2,12 @@ import { useRef, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChatBubble } from './ChatBubble.jsx'
 import { VoiceButton } from './VoiceButton.jsx'
+import { exportTXT, exportMD, exportCSV, exportDOC, exportPDF } from '../../lib/exportChat.js'
 
 export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
   const [input, setInput] = useState('')
   const [focused, setFocused] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -38,8 +40,8 @@ export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
         <motion.div
           className="fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden"
           style={{
-            width: 420,
-            height: '85vh',
+            width: 840,
+            height: '92vh',
             borderRadius: 20,
             backgroundColor: 'rgba(8,12,16,0.92)',
             backdropFilter: 'blur(32px) saturate(1.6)',
@@ -98,6 +100,28 @@ export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
                   {isResponding ? 'escribiendo...' : 'en línea'}
                 </p>
               </div>
+            </div>
+
+            {/* Export dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setExportOpen(v => !v)}
+                disabled={messages.length === 0}
+                style={{ color: messages.length ? 'var(--text-muted)' : 'rgba(74,122,112,0.3)', fontFamily:"'DM Mono',monospace", fontSize:11, padding:'4px 8px', borderRadius:6, border:'1px solid rgba(0,229,196,0.12)', backgroundColor:'rgba(255,255,255,0.03)', cursor: messages.length ? 'pointer' : 'not-allowed' }}
+              >
+                exportar ↓
+              </button>
+              {exportOpen && (
+                <div style={{ position:'absolute', top:'110%', right:0, backgroundColor:'#0d1520', border:'1px solid rgba(0,229,196,0.18)', borderRadius:10, overflow:'hidden', zIndex:100, minWidth:130, boxShadow:'0 8px 24px rgba(0,0,0,0.5)' }}>
+                  {[['PDF','pdf'],['Word (.doc)','doc'],['Markdown','md'],['Texto','txt'],['Excel / CSV','csv']].map(([label, fmt]) => (
+                    <button key={fmt} onClick={() => { setExportOpen(false); ({pdf:exportPDF,doc:exportDOC,md:exportMD,txt:exportTXT,csv:exportCSV})[fmt](messages) }}
+                      style={{ display:'block', width:'100%', padding:'9px 14px', textAlign:'left', fontFamily:"'DM Mono',monospace", fontSize:12, color:'var(--text-primary)', backgroundColor:'transparent', border:'none', cursor:'pointer', borderBottom:'1px solid rgba(0,229,196,0.07)' }}
+                      onMouseEnter={e=>e.currentTarget.style.backgroundColor='rgba(0,229,196,0.08)'}
+                      onMouseLeave={e=>e.currentTarget.style.backgroundColor='transparent'}
+                    >{label}</button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Status dot */}

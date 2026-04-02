@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { NutriaLogo } from '../components/ui/NutriaLogo.jsx'
 import { ChatPanel } from '@shared/components/Chat/ChatPanel.jsx'
 import { ChatFull } from '@shared/components/Chat/ChatFull.jsx'
@@ -19,19 +19,14 @@ export function MainPage({ userId }) {
       <motion.div
         className="pointer-events-none absolute"
         style={{
-          width: 500,
-          height: 500,
-          borderRadius: '50%',
+          width: 500, height: 500, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(0,229,196,0.06) 0%, transparent 70%)',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         }}
         animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-10">
         <NutriaLogo size={88} />
 
@@ -44,30 +39,36 @@ export function MainPage({ userId }) {
           </p>
         </div>
 
-        <motion.button
-          onClick={() => setChatOpen(true)}
-          className="relative overflow-hidden rounded-full px-8 py-4"
-          style={{
-            border: '1.5px solid var(--accent-teal)',
-            color: 'var(--accent-teal)',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: 15,
-            backgroundColor: 'transparent',
-          }}
-          animate={{
-            boxShadow: [
-              '0 0 16px rgba(0,229,196,0.2)',
-              '0 0 32px rgba(0,229,196,0.45)',
-              '0 0 16px rgba(0,229,196,0.2)',
-            ],
-            scale: [1, 1.02, 1],
-          }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          Habla con nutrIA
-        </motion.button>
+        {/* Button fades out once chat opens */}
+        <AnimatePresence>
+          {!chatOpen && (
+            <motion.button
+              onClick={() => setChatOpen(true)}
+              className="relative overflow-hidden rounded-full px-8 py-4"
+              style={{
+                border: '1.5px solid var(--accent-teal)',
+                color: 'var(--accent-teal)',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 15,
+                backgroundColor: 'transparent',
+              }}
+              animate={{
+                boxShadow: [
+                  '0 0 16px rgba(0,229,196,0.2)',
+                  '0 0 32px rgba(0,229,196,0.45)',
+                  '0 0 16px rgba(0,229,196,0.2)',
+                ],
+                scale: [1, 1.02, 1],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}
+            >
+              Habla con nutrIA
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
       {isMobile ? (

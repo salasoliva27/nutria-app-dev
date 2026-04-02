@@ -1,1 +1,1 @@
-{"name":"nutria-app-root","private":true,"version":"0.0.0","dependencies":{"@supabase/supabase-js":"^2.101.1","framer-motion":"^12.38.0","react":"^19.2.4","react-dom":"^19.2.4","react-markdown":"^10.1.0"}}
+{"name":"nutria-app-root","private":true,"version":"0.0.0","dependencies":{"@supabase/supabase-js":"^2.101.1","framer-motion":"^12.38.0","react":"^19.2.4","react-dom":"^19.2.4","react-markdown":"^10.1.0","remark-gfm":"^4.0.1"}}

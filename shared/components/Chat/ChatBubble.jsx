@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { GlowEffect } from './GlowEffect.jsx'
 
 const mdComponents = {
@@ -100,6 +101,43 @@ const mdComponents = {
   hr: () => (
     <hr style={{ border: 'none', borderTop: '1px solid rgba(0,229,196,0.1)', margin: '0.7em 0' }} />
   ),
+  table: ({ children }) => (
+    <div style={{ overflowX: 'auto', margin: '0.5em 0 0.8em' }}>
+      <table style={{
+        width: '100%',
+        borderCollapse: 'collapse',
+        fontFamily: "'DM Mono', monospace",
+        fontSize: '0.85em',
+      }}>{children}</table>
+    </div>
+  ),
+  thead: ({ children }) => (
+    <thead style={{ borderBottom: '1px solid rgba(0,229,196,0.3)' }}>{children}</thead>
+  ),
+  tbody: ({ children }) => <tbody>{children}</tbody>,
+  tr: ({ children }) => (
+    <tr style={{ borderBottom: '1px solid rgba(0,229,196,0.07)' }}>{children}</tr>
+  ),
+  th: ({ children }) => (
+    <th style={{
+      padding: '6px 12px',
+      textAlign: 'left',
+      color: 'var(--accent-teal)',
+      fontWeight: 600,
+      whiteSpace: 'nowrap',
+      fontSize: '0.82em',
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+    }}>{children}</th>
+  ),
+  td: ({ children }) => (
+    <td style={{
+      padding: '6px 12px',
+      color: 'var(--text-primary)',
+      verticalAlign: 'top',
+      lineHeight: 1.5,
+    }}>{children}</td>
+  ),
 }
 
 export function ChatBubble({ message }) {
@@ -165,7 +203,7 @@ export function ChatBubble({ message }) {
       >
         {showGlow && <GlowEffect />}
         <div className="relative z-10">
-          <Markdown components={mdComponents}>
+          <Markdown remarkPlugins={[remarkGfm]} components={mdComponents}>
             {message.content}
           </Markdown>
         </div>
