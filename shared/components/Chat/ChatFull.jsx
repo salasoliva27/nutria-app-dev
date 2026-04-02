@@ -5,7 +5,9 @@ import { VoiceButton } from './VoiceButton.jsx'
 
 export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
   const [input, setInput] = useState('')
+  const [focused, setFocused] = useState(false)
   const messagesEndRef = useRef(null)
+  const textareaRef = useRef(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -17,6 +19,7 @@ export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
     if (!text || isResponding) return
     onSend(text)
     setInput('')
+    if (textareaRef.current) textareaRef.current.style.height = 'auto'
   }
 
   function handleKeyDown(e) {
@@ -31,84 +34,270 @@ export function ChatFull({ isOpen, onClose, messages, isResponding, onSend }) {
       {isOpen && (
         <motion.div
           className="fixed inset-0 z-50 flex flex-col"
-          style={{ backgroundColor: 'var(--bg-deep)', paddingBottom: 'env(safe-area-inset-bottom)' }}
+          style={{
+            backgroundColor: 'var(--bg-deep)',
+            paddingBottom: 'env(safe-area-inset-bottom)',
+          }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
-          transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
         >
+          {/* Ambient blob */}
+          <div
+            className="pointer-events-none absolute"
+            style={{
+              width: 300,
+              height: 300,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(0,229,196,0.05) 0%, transparent 70%)',
+              top: -80,
+              right: -60,
+              zIndex: 0,
+            }}
+          />
+
           {/* Header */}
           <div
-            className="flex items-center justify-between px-5 py-4"
+            className="relative z-10 flex items-center justify-between"
             style={{
-              borderBottom: '1px solid rgba(0,229,196,0.1)',
-              paddingTop: 'max(1rem, env(safe-area-inset-top))',
+              padding: '16px 20px',
+              paddingTop: 'max(16px, env(safe-area-inset-top))',
+              borderBottom: '1px solid rgba(0,229,196,0.08)',
+              background: 'linear-gradient(180deg, rgba(0,229,196,0.04) 0%, transparent 100%)',
             }}
           >
-            <span style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: 18 }}>
-              nutrIA
-            </span>
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-3">
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                backgroundColor: 'rgba(0,229,196,0.08)',
+                border: '1px solid rgba(0,229,196,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <svg width="22" height="22" viewBox="0 0 64 64" fill="none">
+                  <circle cx="32" cy="30" r="20" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.8" />
+                  <circle cx="16" cy="14" r="5" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.5" />
+                  <circle cx="48" cy="14" r="5" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.5" />
+                  <circle cx="16" cy="14" r="2.5" fill="rgba(0,229,196,0.15)" />
+                  <circle cx="48" cy="14" r="2.5" fill="rgba(0,229,196,0.15)" />
+                  <ellipse cx="32" cy="35" rx="11" ry="9" fill="rgba(0,229,196,0.07)" />
+                  <circle cx="24" cy="27" r="4" fill="#f0c060" />
+                  <circle cx="40" cy="27" r="4" fill="#f0c060" />
+                  <circle cx="24.8" cy="26.5" r="2" fill="#080c10" />
+                  <circle cx="40.8" cy="26.5" r="2" fill="#080c10" />
+                  <circle cx="25.6" cy="25.6" r="0.8" fill="white" opacity="0.9" />
+                  <circle cx="41.6" cy="25.6" r="0.8" fill="white" opacity="0.9" />
+                  <ellipse cx="32" cy="33" rx="4.5" ry="2.8" fill="#00e5c4" opacity="0.7" />
+                  <ellipse cx="32" cy="32.5" rx="2.5" ry="1.5" fill="#00e5c4" />
+                </svg>
+              </div>
+              <div>
+                <p style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.2,
+                }}>
+                  nutrIA
+                </p>
+                <p style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 10,
+                  color: 'var(--accent-teal)',
+                  opacity: 0.7,
+                  marginTop: 2,
+                }}>
+                  {isResponding ? 'escribiendo...' : 'en línea'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <motion.div
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--accent-teal)',
+                }}
+                animate={{ opacity: isResponding ? [1, 0.3, 1] : 1 }}
+                transition={{ duration: 1.2, repeat: isResponding ? Infinity : 0 }}
+              />
+              <button
+                onClick={onClose}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path d="M1 1l11 11M12 1L1 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4">
+          <div
+            className="relative z-10 flex-1 overflow-y-auto"
+            style={{ padding: '20px 16px 8px' }}
+          >
             {messages.length === 0 && (
-              <div className="flex h-full items-center justify-center">
-                <p style={{ color: 'var(--text-muted)', fontFamily: "'DM Mono', monospace", fontSize: 13, textAlign: 'center' }}>
-                  Hola, soy nutrIA 🦦<br />¿En qué puedo ayudarte hoy?
+              <div className="flex h-full flex-col items-center justify-center gap-3">
+                <p style={{ fontSize: 32 }}>🦦</p>
+                <p style={{
+                  color: 'var(--text-muted)',
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 13,
+                  textAlign: 'center',
+                  lineHeight: 1.7,
+                }}>
+                  Hola, soy nutrIA.<br />¿En qué puedo ayudarte hoy?
                 </p>
               </div>
             )}
             {messages.map((msg, i) => (
               <ChatBubble key={i} message={msg} />
             ))}
+            {isResponding && messages[messages.length - 1]?.content === '' && (
+              <TypingIndicator />
+            )}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 px-4 py-3"
-            style={{ borderTop: '1px solid rgba(0,229,196,0.1)' }}
+            className="relative z-10 flex items-end gap-2"
+            style={{
+              padding: '12px 16px 16px',
+              borderTop: '1px solid rgba(0,229,196,0.08)',
+              background: 'linear-gradient(0deg, rgba(0,229,196,0.03) 0%, transparent 100%)',
+            }}
           >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Escribe un mensaje..."
-              className="flex-1 rounded-xl px-4 py-3 text-sm outline-none"
+            <div
+              className="flex flex-1 items-end rounded-2xl transition-all"
               style={{
                 backgroundColor: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(0,229,196,0.15)',
-                color: 'var(--text-primary)',
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 16,
+                border: focused
+                  ? '1px solid rgba(0,229,196,0.35)'
+                  : '1px solid rgba(255,255,255,0.07)',
+                boxShadow: focused ? '0 0 0 3px rgba(0,229,196,0.06)' : 'none',
+                minHeight: 48,
+                padding: '12px 14px',
               }}
-              disabled={isResponding}
-            />
-            <VoiceButton onTranscript={(t) => setInput((prev) => prev + t)} />
-            <button
-              type="submit"
-              disabled={!input.trim() || isResponding}
-              className="flex items-center justify-center rounded-xl disabled:opacity-30"
-              style={{ width: 44, height: 44, backgroundColor: 'var(--accent-teal)', flexShrink: 0 }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z" stroke="#080c10" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value)
+                  e.target.style.height = 'auto'
+                  e.target.style.height = Math.min(e.target.scrollHeight, 140) + 'px'
+                }}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                placeholder="Escribe un mensaje..."
+                rows={1}
+                disabled={isResponding}
+                style={{
+                  width: '100%',
+                  resize: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-primary)',
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 16, // 16px prevents iOS zoom
+                  lineHeight: 1.55,
+                  overflowY: 'hidden',
+                  caretColor: 'var(--accent-teal)',
+                }}
+              />
+            </div>
+
+            <div className="flex flex-shrink-0 items-center gap-1.5 pb-1">
+              <VoiceButton onTranscript={(t) => setInput((prev) => (prev ? prev + ' ' : '') + t)} />
+              <motion.button
+                type="submit"
+                disabled={!input.trim() || isResponding}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 14,
+                  background: input.trim() && !isResponding
+                    ? 'linear-gradient(135deg, #00e5c4 0%, #00b89e 100%)'
+                    : 'rgba(0,229,196,0.1)',
+                  border: 'none',
+                  cursor: input.trim() && !isResponding ? 'pointer' : 'not-allowed',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+                whileTap={input.trim() && !isResponding ? { scale: 0.92 } : {}}
+                whileHover={input.trim() && !isResponding ? { scale: 1.05 } : {}}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"
+                    stroke={input.trim() && !isResponding ? '#080c10' : 'rgba(0,229,196,0.35)'}
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </motion.button>
+            </div>
           </form>
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex justify-start" style={{ marginBottom: 16 }}>
+      <div
+        className="flex items-center gap-1.5"
+        style={{
+          padding: '10px 14px',
+          borderRadius: 16,
+          borderBottomLeftRadius: 4,
+          backgroundColor: 'rgba(13,21,32,0.85)',
+          border: '1px solid rgba(0,229,196,0.09)',
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={i}
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: '50%',
+              backgroundColor: 'var(--accent-teal)',
+            }}
+            animate={{ opacity: [0.25, 1, 0.25], y: [0, -2, 0] }}
+            transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.18 }}
+          />
+        ))}
+      </div>
+    </div>
   )
 }

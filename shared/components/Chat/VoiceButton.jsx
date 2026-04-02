@@ -12,20 +12,24 @@ export function VoiceButton({ onTranscript }) {
   }, [isRecording, transcript])
 
   return (
-    <div className="relative flex items-center justify-center">
-      {/* Concentric pulse rings when recording */}
+    <div className="relative flex items-center justify-center" style={{ flexShrink: 0 }}>
+      {/* Concentric pulse rings */}
       <AnimatePresence>
-        {isRecording && [1, 2, 3].map((i) => (
+        {isRecording && [1, 2].map((i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full border"
-            style={{ borderColor: 'rgba(0,229,196,0.3)' }}
-            initial={{ width: 36, height: 36, opacity: 0.6 }}
-            animate={{ width: 36 + i * 18, height: 36 + i * 18, opacity: 0 }}
+            className="absolute rounded-full"
+            style={{
+              border: '1px solid rgba(0,229,196,0.25)',
+              pointerEvents: 'none',
+            }}
+            initial={{ width: 40, height: 40, opacity: 0.5 }}
+            animate={{ width: 40 + i * 22, height: 40 + i * 22, opacity: 0 }}
+            exit={{ opacity: 0 }}
             transition={{
-              duration: 1.4,
+              duration: 1.5,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: i * 0.35,
               ease: 'easeOut',
             }}
           />
@@ -33,28 +37,48 @@ export function VoiceButton({ onTranscript }) {
       </AnimatePresence>
 
       <motion.button
+        type="button"
         onClick={isRecording ? stopRecording : startRecording}
-        className="relative z-10 flex items-center justify-center rounded-full border transition-colors"
         style={{
-          width: 36,
-          height: 36,
-          backgroundColor: isRecording ? 'rgba(0,229,196,0.2)' : 'transparent',
-          borderColor: isRecording ? 'var(--accent-teal)' : 'rgba(0,229,196,0.3)',
+          width: 40,
+          height: 40,
+          borderRadius: 12,
+          backgroundColor: isRecording
+            ? 'rgba(255,85,85,0.15)'
+            : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${isRecording ? 'rgba(255,85,85,0.4)' : 'rgba(255,255,255,0.07)'}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          flexShrink: 0,
+          position: 'relative',
+          zIndex: 1,
         }}
-        animate={isRecording ? { scale: [1, 1.08, 1] } : {}}
+        animate={isRecording ? {
+          scale: [1, 1.06, 1],
+          boxShadow: [
+            '0 0 0 rgba(255,85,85,0)',
+            '0 0 12px rgba(255,85,85,0.25)',
+            '0 0 0 rgba(255,85,85,0)',
+          ],
+        } : {}}
         transition={isRecording ? { duration: 1.4, repeat: Infinity } : {}}
         whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
         title={isRecording ? 'Detener grabación' : 'Hablar'}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path
-            d={isRecording
-              ? 'M6 6h12v12H6z'
-              : 'M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm-8 9h2a8 8 0 0 0 16 0h2a10 10 0 0 1-9 9.95V22h-2v-2.05A10 10 0 0 1 4 10z'
-            }
-            fill={isRecording ? '#ff5555' : 'var(--accent-teal)'}
-          />
-        </svg>
+        {isRecording ? (
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <rect x="1" y="1" width="10" height="10" rx="2" fill="#ff5555" />
+          </svg>
+        ) : (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <rect x="9" y="2" width="6" height="12" rx="3" stroke="rgba(232,244,240,0.5)" strokeWidth="1.5" fill="none" />
+            <path d="M5 10a7 7 0 0 0 14 0" stroke="rgba(232,244,240,0.5)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+            <line x1="12" y1="17" x2="12" y2="22" stroke="rgba(232,244,240,0.5)" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        )}
       </motion.button>
     </div>
   )
