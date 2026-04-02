@@ -134,16 +134,23 @@ export function ChatPanel({ isOpen, onClose, messages, isResponding, onSend }) {
 
 function OtterMini() {
   return (
-    <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-      <ellipse cx="20" cy="22" rx="13" ry="11" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.5" />
-      <ellipse cx="20" cy="16" rx="9" ry="8" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.5" />
-      <circle cx="17" cy="15" r="2" fill="#f0c060" />
-      <circle cx="23" cy="15" r="2" fill="#f0c060" />
-      <circle cx="17.6" cy="14.4" r="0.8" fill="#080c10" />
-      <circle cx="23.6" cy="14.4" r="0.8" fill="#080c10" />
-      <ellipse cx="20" cy="19" rx="3" ry="2" fill="#00e5c4" opacity="0.4" />
-      <ellipse cx="9" cy="16" rx="4" ry="3" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.2" />
-      <ellipse cx="31" cy="16" rx="4" ry="3" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.2" />
+    <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="30" r="20" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.8" />
+      <circle cx="16" cy="14" r="5" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.5" />
+      <circle cx="48" cy="14" r="5" fill="#0d1520" stroke="#00e5c4" strokeWidth="1.5" />
+      <circle cx="16" cy="14" r="2.5" fill="rgba(0,229,196,0.12)" />
+      <circle cx="48" cy="14" r="2.5" fill="rgba(0,229,196,0.12)" />
+      <ellipse cx="32" cy="35" rx="11" ry="9" fill="rgba(0,229,196,0.07)" />
+      <circle cx="24" cy="27" r="4" fill="#f0c060" />
+      <circle cx="40" cy="27" r="4" fill="#f0c060" />
+      <circle cx="24.8" cy="26.5" r="2" fill="#080c10" />
+      <circle cx="40.8" cy="26.5" r="2" fill="#080c10" />
+      <circle cx="25.6" cy="25.6" r="0.8" fill="white" opacity="0.9" />
+      <circle cx="41.6" cy="25.6" r="0.8" fill="white" opacity="0.9" />
+      <ellipse cx="32" cy="33" rx="4.5" ry="2.8" fill="#00e5c4" opacity="0.7" />
+      <ellipse cx="32" cy="32.5" rx="2.5" ry="1.5" fill="#00e5c4" />
+      <circle cx="20" cy="35" r="0.9" fill="rgba(0,229,196,0.5)" />
+      <circle cx="44" cy="35" r="0.9" fill="rgba(0,229,196,0.5)" />
     </svg>
   )
 }

@@ -1,13 +1,42 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { NutriaLogo } from '../ui/NutriaLogo.jsx'
 
+const COPY = {
+  es: {
+    tagline: 'tu agente de nutrición clínica',
+    google: 'Continuar con Google',
+    or: 'o',
+    emailPlaceholder: 'correo@email.com',
+    passwordPlaceholder: 'contraseña',
+    signIn: 'Iniciar sesión',
+    signUp: 'Crear cuenta',
+    loading: '...',
+    toSignUp: '¿Sin cuenta? Regístrate',
+    toSignIn: '¿Ya tienes cuenta? Inicia sesión',
+  },
+  en: {
+    tagline: 'your clinical nutrition AI agent',
+    google: 'Continue with Google',
+    or: 'or',
+    emailPlaceholder: 'email@example.com',
+    passwordPlaceholder: 'password',
+    signIn: 'Sign in',
+    signUp: 'Create account',
+    loading: '...',
+    toSignUp: "No account? Sign up",
+    toSignIn: 'Already have an account? Sign in',
+  },
+}
+
 export function AuthScreen({ onAuth }) {
+  const [lang, setLang] = useState('es')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const t = COPY[lang]
 
   async function handleGoogleLogin() {
     const { supabase } = await import('@shared/lib/supabase.js')
@@ -36,8 +65,25 @@ export function AuthScreen({ onAuth }) {
       className="relative flex h-full items-center justify-center overflow-hidden"
       style={{ backgroundColor: 'var(--bg-deep)' }}
     >
-      {/* Animated noise background */}
       <NoiseBackground />
+
+      {/* Lang toggle */}
+      <div className="absolute top-5 right-5 z-20 flex rounded-lg overflow-hidden" style={{ border: '1px solid rgba(0,229,196,0.2)' }}>
+        {['es', 'en'].map((l) => (
+          <button
+            key={l}
+            onClick={() => setLang(l)}
+            className="px-3 py-1 text-xs transition-colors"
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              backgroundColor: lang === l ? 'rgba(0,229,196,0.15)' : 'transparent',
+              color: lang === l ? 'var(--accent-teal)' : 'var(--text-muted)',
+            }}
+          >
+            {l.toUpperCase()}
+          </button>
+        ))}
+      </div>
 
       <motion.div
         className="relative z-10 flex w-full max-w-sm flex-col items-center gap-8 px-6"
@@ -45,18 +91,16 @@ export function AuthScreen({ onAuth }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Logo */}
         <div className="flex flex-col items-center gap-4">
           <NutriaLogo size={72} />
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
             nutrIA
           </h1>
           <p style={{ color: 'var(--text-muted)', fontFamily: "'DM Mono', monospace", fontSize: 12 }}>
-            tu agente de nutrición clínica
+            {t.tagline}
           </p>
         </div>
 
-        {/* Google login */}
         <button
           onClick={handleGoogleLogin}
           className="flex w-full items-center justify-center gap-3 rounded-xl py-3 transition-opacity hover:opacity-80"
@@ -69,20 +113,19 @@ export function AuthScreen({ onAuth }) {
           }}
         >
           <GoogleIcon />
-          Continuar con Google
+          {t.google}
         </button>
 
         <div className="flex w-full items-center gap-3">
           <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-          <span style={{ color: 'var(--text-muted)', fontSize: 11, fontFamily: "'DM Mono', monospace" }}>o</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: 11, fontFamily: "'DM Mono', monospace" }}>{t.or}</span>
           <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
         </div>
 
-        {/* Email/password */}
         <form onSubmit={handleEmailAuth} className="flex w-full flex-col gap-3">
           <input
             type="email"
-            placeholder="correo@email.com"
+            placeholder={t.emailPlaceholder}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-xl px-4 py-3 text-sm outline-none"
@@ -96,7 +139,7 @@ export function AuthScreen({ onAuth }) {
           />
           <input
             type="password"
-            placeholder="contraseña"
+            placeholder={t.passwordPlaceholder}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-xl px-4 py-3 text-sm outline-none"
@@ -123,7 +166,7 @@ export function AuthScreen({ onAuth }) {
               fontFamily: "'DM Mono', monospace",
             }}
           >
-            {loading ? '...' : isSignUp ? 'Crear cuenta' : 'Iniciar sesión'}
+            {loading ? t.loading : isSignUp ? t.signUp : t.signIn}
           </button>
         </form>
 
@@ -132,7 +175,7 @@ export function AuthScreen({ onAuth }) {
           style={{ color: 'var(--text-muted)', fontSize: 12, fontFamily: "'DM Mono', monospace" }}
           className="hover:opacity-80"
         >
-          {isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿Sin cuenta? Regístrate'}
+          {isSignUp ? t.toSignIn : t.toSignUp}
         </button>
       </motion.div>
     </div>
@@ -145,7 +188,7 @@ function NoiseBackground() {
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full opacity-[0.04]"
+          className="absolute rounded-full"
           style={{
             width: 300 + i * 80,
             height: 300 + i * 80,
@@ -154,15 +197,8 @@ function NoiseBackground() {
             top: `${5 + i * 8}%`,
             filter: 'blur(60px)',
           }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.03, 0.07, 0.03],
-          }}
-          transition={{
-            duration: 4 + i,
-            repeat: Infinity,
-            delay: i * 0.7,
-          }}
+          animate={{ scale: [1, 1.1, 1], opacity: [0.03, 0.07, 0.03] }}
+          transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.7 }}
         />
       ))}
     </div>

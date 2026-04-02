@@ -14,7 +14,8 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
 
   async function loadConversation() {
     try {
-      const { supabase } = await import('../lib/supabase.js')
+      const { supabase, supabaseConfigured } = await import('../lib/supabase.js')
+      if (!supabaseConfigured) return
       const { data } = await supabase
         .from('conversations')
         .select('id, messages')
@@ -33,7 +34,8 @@ export function useChat({ persist = false, userId = null, patientProfile = null 
   async function saveConversation(updatedMessages) {
     if (!persist || !userId) return
     try {
-      const { supabase } = await import('../lib/supabase.js')
+      const { supabase, supabaseConfigured } = await import('../lib/supabase.js')
+      if (!supabaseConfigured) return
       if (conversationId) {
         await supabase
           .from('conversations')
