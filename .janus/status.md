@@ -4,6 +4,9 @@ stage: dev
 phase: ""
 phaseProgress: 0
 summary: "nutrIA — React PWA + embeddable widget. Clinical nutrition AI agent frontend."
+lastSyncedAt: "2026-04-30T19:01:15.441Z"
+lastSyncedCommit: "edc083c"
+lastSyncedCommitMessage: "Add PORTFOLIO-MAP.md — portfolio mind map and repo interaction graph"
 ---
 
 ## Next Steps
