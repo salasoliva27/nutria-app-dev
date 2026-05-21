@@ -1,6 +1,6 @@
 ---
-lastSyncedAt: "2026-05-21T18:25:13.258Z"
-lastSyncedCommit: "2cfa417"
+lastSyncedAt: "2026-05-21T18:25:17.108Z"
+lastSyncedCommit: "fdff9b1"
 lastSyncedCommitMessage: "chore(janus): sync .janus/status.md from wiki/nutria.md"
 ---
 
